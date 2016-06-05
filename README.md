@@ -21,8 +21,7 @@ StudCloud.SSO - пакет, который упрощает операции, с
                 <li> string - allow to change password(value is key)</li>
                 <li>  undefined - not allow to change password  </li>
          </ul>
-   </br>
-Также с помощью него можно проверить уровень авторизации:
+Также с помощью него можно проверить уровень авторизации:  
     1. authLevel >= required - пропускаем дальше
     2. authLevel < required - ошибка(401 или 405)
     
