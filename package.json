@@ -1,6 +1,6 @@
 {
   "name": "@anzuev/studcloud.sso",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "SSO for StudCloud project.",
   "main": "index.js",
   "scripts": {
