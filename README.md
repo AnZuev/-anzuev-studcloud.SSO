@@ -1,22 +1,22 @@
 # SSO package for StudCloud project
 
-StudCloud.SSO - пакет, который упрощает операции, связанные с авторизацией клиентов.
-Всю работу с cookie и сессиями можно поручить пакету.
-Для каждого запроса создается контекст:
-    уровень авторизации(0-4):
-        0 - unauthorized,
-    	1 - authorized
-    	2 - mail submitted
-   		3 - mobile submitted
-   		4 - document submitted,
-   	объект user
-        user - authLevel > 0
-        undefined - authLevel == 0
-   	changePasswordToken:
-    	string - allow to change password(value is key)
-    	undefined - not allow to change password
+StudCloud.SSO - пакет, который упрощает операции, связанные с авторизацией клиентов.__
+Всю работу с cookie и сессиями можно поручить пакету.__
+Для каждого запроса создается контекст:__
+    * уровень авторизации(0-4):__
+        * 0 - unauthorized
+        * 1 - authorized
+    	* 2 - mail submitted
+   		* 3 - mobile submitted
+   		* 4 - document submitted,
+   	* объект user
+        * user - authLevel > 0
+        * undefined - authLevel == 0
+   	* changePasswordToken:
+    	* string - allow to change password(value is key)
+    	* undefined - not allow to change password__
     	
-Также с помощью него можно проверить уровень авторизации.
+Также с помощью него можно проверить уровень авторизации:
     - authLevel >= required - пропускаем дальше
     - authLevel < required - ошибка(401 или 405)
     
@@ -28,10 +28,12 @@ npm install @anzuev/studcloud.sso --save
 
 ## Usage
 
+
+```js
 let SSO = require('sso');
 
 
-...express app
+//...express app
     let configuration = {
 	    auth:{
             host: '127.0.0.1',
@@ -41,14 +43,17 @@ let SSO = require('sso');
 	};
 	//before use
 	SSO.init(configuration);
+	
 	//basic work withSession, now it is express-session middleware
     app.use(SSO.getSessionsMiddleware());
+    
     //load user context
     app.use(SSO.getContextMiddleware());
-... express app
+
+//... express app
 
 
-... routes file
+//... routes file
     router.get('/', SSO.checkAuthMiddleware, function(req, res, next) {
         res.render('index', { title: 'Express' });
     });
@@ -59,7 +64,8 @@ let SSO = require('sso');
         - checkMobileActivationMiddleware
         - checkDocumentActivationMiddleware
     */
-... routes file
+//... routes file
+```
 
 
 

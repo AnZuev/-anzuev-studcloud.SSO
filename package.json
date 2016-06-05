@@ -10,6 +10,7 @@
     "studcloud",
     "sso"
   ],
+  "repository": "https://github.com/AnZuev/StudCloud.SSO.git",
   "author": "AnZuev",
   "license": "ISC",
   "dependencies": {
