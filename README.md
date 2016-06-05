@@ -1,24 +1,30 @@
 # SSO package for StudCloud project
 
-StudCloud.SSO - пакет, который упрощает операции, связанные с авторизацией клиентов.__
-Всю работу с cookie и сессиями можно поручить пакету.__
-Для каждого запроса создается контекст:__
-    * уровень авторизации(0-4):__
-        * 0 - unauthorized
-        * 1 - authorized
-    	* 2 - mail submitted
-   		* 3 - mobile submitted
-   		* 4 - document submitted,
-   	* объект user
-        * user - authLevel > 0
-        * undefined - authLevel == 0
-   	* changePasswordToken:
-    	* string - allow to change password(value is key)
-    	* undefined - not allow to change password__
-    	
+StudCloud.SSO - пакет, который упрощает операции, связанные с авторизацией клиентов.  
+Всю работу с cookie и сессиями можно поручить пакету.  
+Для каждого запроса создается контекст:  
+    1. уровень авторизации(0-4):  
+       <ul>
+            <li> 0 - unauthorized</li>
+            <li> 1 - authorized</li>
+    	    <li> 2 - mail submitted</li>
+   		    <li> 3 - mobile submitted</li>
+   		    <li> 4 - document submitted</li>
+   	    </ul>
+   	2. объект user
+   	    <ul>
+                <li> user - authLevel > 0</li>
+                <li> undefined - authLevel == 0 </li>
+       	</ul>
+   	3. changePasswordToken:
+   	     <ul>
+                <li> string - allow to change password(value is key)</li>
+                <li>  undefined - not allow to change password  </li>
+         </ul>
+   
 Также с помощью него можно проверить уровень авторизации:
-    - authLevel >= required - пропускаем дальше
-    - authLevel < required - ошибка(401 или 405)
+    1. authLevel >= required - пропускаем дальше
+    2. authLevel < required - ошибка(401 или 405)
     
 
 ## Installation
