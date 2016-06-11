@@ -252,5 +252,5 @@ let res = yield sso.setPasswordKey(anzuev@bk.ru);
 
 ## History
 
-First version - 1.0.0
+First version - 1.0.0  
 Current version - 1.1.0
