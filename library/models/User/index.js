@@ -1,15 +1,13 @@
 'use strict';
 
-var mongoose = require('../../libs/mongoose'),
+let mongoose = require('../../libs/mongoose'),
     Schema = mongoose.Schema,
 	Q = require('q'),
 	Util = require('util'),
-	Log = require('../../libs/log')(module),
 	DbError = require("@anzuev/studcloud.errors").DbError,
+	AuthError = require("@anzuev/studcloud.errors").AuthError,
 	Crypto = require('crypto');
 
-
-let async = require('async');
 
 var User = new Schema({
     auth: {
@@ -148,89 +146,34 @@ var User = new Schema({
 
 
 
-User.statics.setPasswordKey = function(mail){
-	let defer = Q.defer();
-	let key = Crypto.createHmac('sha1', Math.random() + "").update(mail).digest("hex").toString();
-
-	let promise = this.update(
-		{
-			"auth.mail": mail
-		},
-		{
-			"activation.passwordKey": key
-		});
-
-	promise.then(function(result){
-		if(result.nModified == 0){
-			defer.reject(new DbError(null, 404, Util.format("No user find by mail '%'", mail)));
-		}else{
-			defer.fulfill({mail: mail, key: key});
-		}
-	}).catch(function(err){
-		defer.reject(new DbError(err, 500));
-	});
-
-	return defer.promise;
-
+User.methods.encryptPassword = function(password){
+	return Crypto.createHmac('sha1',this.auth.salt).update(password + "").digest("hex");
 };
 
-User.statics.hasPasswordTokenByMail = function(mail, key){
-	let defer = Q.defer();
-
-	let promise = this.findOne(
-		{
-			"auth.mail": mail,
-			"authActions.changePassword.key": key
-		});
-
-	promise.then(function(user){
-		if(!user) {
-			defer.fulfill(false)
-		}else{
-			defer.fulfill(true)
-		}
-	}).catch(function(err){
-		defer.reject(new DbError(err, 500));
-	});
-
-};
-
-User.methods.getChangePasswordContext = function(){
-	if(this.authActions.changePassword.key.length > 6){
-		return this.authActions.changePassword.key;
-	}else{
-		return false;
-	}
-};
-
-User.statics.setNewPasswordByMail = function(mail, key, password){
-
-	let defer = Q.defer();
-	let rubbish = Crypto.createHmac('sha1', Math.random() + "").update(mail).update(key).digest("hex").toString();
-
-	let promise = this.update(
-		{
-			"auth.mail": mail,
-			"activation.passwordKey": key
-		},
-		{
-			"activation.passwordKey": rubbish,
-			"auth.password": password
-		});
-
-	promise.then(function(result){
-		if(result.n == 0){
-			defer.reject(new DbError(null, 404, Util.format("No user find by mail '%'", mail)));
-		}else if(result.nModified == 1){
-			defer.fulfill(true);
-		}else{
-			defer.reject("This is impossible case. Tell @AnZuev if it occures");
-		}
-	}).catch(function(err){
-		defer.reject(new DbError(err, 500));
+User.virtual('auth.password')
+	.set(function(password) {
+		this.auth._plainPassword = password;
+		this.auth.salt = Math.random() + "";
+		this.auth.hashed_password = this.encryptPassword(password);
 	})
+	.get(function() { return this._plainPassword;} );
 
+User.methods.checkPassword = require('./handlers/passwordHandlers').checkPassword;
+
+User.statics.setPasswordKey = require('./handlers/passwordHandlers').setPasswordKey;
+
+User.statics.hasPasswordTokenByMail = require('./handlers/passwordHandlers').hasPasswordTokenByMail;
+
+User.methods.getChangePasswordContext = require('./handlers/passwordHandlers').getChangePasswordContext;
+
+User.statics.setNewPasswordByMail = require('./handlers/passwordHandlers').setNewPasswordByMail;
+
+User.methods.setPasswordKey = function(){
+	this.changePassword.key = Crypto.createHmac('sha1', Math.random() + "")
+		.update(this.auth.mail)
+		.digest("hex").toString();
 };
+
 
 User.methods.getAuthLevel = function(){
 	if(this.authActions.documentSubmit.done){
@@ -259,21 +202,132 @@ User.statics.getById = function(id){
 };
 
 User.methods.saveUser = function(){
-	var a = 5;
+	let a = 5;
+	let user;
+	let User = this;
 	return Q.async(function*(){
 		while(a > 0){
 			try{
-				yield this.save();
-				break;
+				user = yield User.save();
+				return user;
 			}catch(err){
 				a--;
 			}
 		}
+		throw new DbError(null, "Can't save user");
+	})();
+};
+
+
+User.statics.signIn = function(authData){
+	let User = this;
+	return Q.async(function*(){
+		let user;
+		try{
+			user =  yield User.findOne({"auth.mail": authData.mail});
+		}catch(err){
+			throw new DbError(err, 500);
+		}
+
+		if(user){
+			if(user.checkPassword(authData.password)) {
+				return user;
+			}else{
+				throw new AuthError('Incorrect password', 401);
+			}
+		}else{
+			throw new AuthError('Incorrect mail', 401);
+		}
+	})();
+};
+
+User.statics.signUp = function(authData){
+	let User = this;
+
+	return Q.async(function*(){
+		let user;
+		try{
+			user = yield User.findOne({"auth.mail": authData.mail});
+		}catch(err){
+			throw new DbError(err, 500);
+		}
+
+		if(user){
+			throw new AuthError(400, Util.format("mail %s already in use", authData.mail));
+		}
+		let key = Crypto.createHmac('sha1', Math.random() + "").update(authData.mail).digest("hex").toString();
+		let newUser = new User({
+			pubInform:{
+				name: authData.name,
+				surname: authData.surname
+			},
+			auth:{
+				mail: authData.mail,
+				password: authData.password
+			},
+			authActions:{
+				mailSubmit:{
+					key: key
+				}
+			}
+		});
+		return yield newUser.saveUser();
 	})();
 };
 
 
 
+User.statics.confirmMail = function(mail, key){
+	let defer = Q.defer();
+
+
+	let promise = this.update(
+		{
+			"auth.mail": mail,
+			"authActions.mailSubmit.key": key
+		},
+		{
+			"authActions.mailSubmit.done": true,
+			"authActions.mailSubmit.key": null
+		}
+	);
+	promise.then(function(result){
+		if(result.nModified == 1) defer.resolve(true);
+		else{
+			defer.reject(new AuthError(403, 'Confirmation failed'));
+		}
+	}).catch(function(err){
+		defer.reject(new DbError(err, 500));
+	});
+
+	return defer.promise;
+};
+
+User.statics.confirmMobile = function(mail, phone, key){
+	let defer = Q.defer();
+
+
+	let promise = this.update(
+		{
+			"auth.mail": mail,
+			"authActions.mobileSubmit.key": key
+		},
+		{
+			"authActions.mobileSubmit.done": true,
+			"authActions.mobileSubmit.key": ''
+		}
+	);
+	promise.then(function(result){
+		if(result.nModified == 1) defer.resolve(true);
+		else{
+			defer.reject(new AuthError(403, 'Confirmation failed'));
+		}
+	}).catch(function(err){
+		defer.reject(new DbError(err, 500));
+	});
+
+	return defer.promise;
+};
 
 
 exports.User = mongoose.model('User', User);

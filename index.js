@@ -12,46 +12,63 @@ let config = require('./config'),
 
 /*
 	SSO class for StudCloud project;
-	functions
+
  */
-function SSO(store){
+function SSO(){
+
+	var store;
 
 	this.init = function(configuration){
-		store = getStore(configuration.auth)
+		store = getStore(configuration.auth);
 		// check configuration
 		if(!store) throw new Error("Module 'studcloud.SSO' hasn't been configured");
-
 	};
-
-	this.getSessionsMiddleware = function(){
-
-		// check configuration
-		if(!store) throw new Error("Module 'studcloud.SSO' hasn't been configured");
-
-		return session({
-			secret: config.get('session:secret'),
-			key: config.get('session:key'),
-			cookie: config.get('session:cookie'),
-			resave: false,
-			saveUninitialized: true,
-			store: store
-		})
-	};
-
-	this.getContextMiddleware = function(){
-
-		// check configuration
-		if(!store) throw new Error("Module 'studcloud.SSO' hasn't been configured");
-
-		return this.loadContext;
-	}
-
-	this.checkAuthMiddleware = require('./library/handlers/access').checkAuth;
-	this.checkMailActivationMiddleware = require('./library/handlers/access').checkMailActivation;
-	this.checkMobileActivationMiddleware = require('./library/handlers/access').checkMobileActivation;
-	this.checkDocumentActivationMiddleware = require('./library/handlers/access').checkDocumentActivation;
 
 }
+
+
+
+SSO.prototype.checkAuthMiddleware = require('./library/handlers/access').checkAuth;
+SSO.prototype.checkMailActivationMiddleware = require('./library/handlers/access').checkMailActivation;
+SSO.prototype.checkMobileActivationMiddleware = require('./library/handlers/access').checkMobileActivation;
+SSO.prototype.checkDocumentActivationMiddleware = require('./library/handlers/access').checkDocumentActivation;
+
+
+SSO.prototype.signUp = require('./library/handlers/auth').signUp;
+SSO.prototype.signIn = require('./library/handlers/auth').signIn;
+
+SSO.prototype.confirmMail = require('./library/handlers/confirmation').mail;
+SSO.prototype.confirmMobile = require('./library/handlers/confirmation').mobile;
+SSO.prototype.confirmDocument = require('./library/handlers/confirmation').document;
+
+SSO.prototype.setPassword = require('./library/handlers/passwords').setPassword;
+SSO.prototype.setPasswordKey = require('./library/handlers/passwords').setPasswordKey;
+
+SSO.prototype.getSessionsMiddleware = function(){
+
+	// check configuration
+	if(!store) throw new Error("Module 'studcloud.SSO' hasn't been configured");
+
+	return session({
+		secret: config.get('session:secret'),
+		key: config.get('session:key'),
+		cookie: config.get('session:cookie'),
+		resave: false,
+		saveUninitialized: true,
+		store: store
+	})
+};
+
+SSO.prototype.getContextMiddleware = function(){
+
+	// check configuration
+	if(!store) throw new Error("Module 'studcloud.SSO' hasn't been configured");
+
+	return loadContext;
+};
+
+
+
 
 
 /*
@@ -69,7 +86,7 @@ function SSO(store){
 		undefined - authLevel = 0
 
  */
-SSO.prototype.loadContext = function(req, res, next){
+function loadContext(req, res, next){
 	req.context = {};
 
 	if(!req.session.user){
@@ -93,10 +110,15 @@ SSO.prototype.loadContext = function(req, res, next){
 };
 
 
-
-
 /*
 	function to get MongoStore for sessions
+	Вход:
+		- settings
+			- db
+			- host
+			- port
+			- user(optional)
+			- password(optional)
  */
 function getStore(settings){
 
@@ -120,6 +142,8 @@ function getStore(settings){
 	}
 	return new MongoStore({url: url});
 }
+
+
 
 let sso = new SSO();
 module.exports = sso;
