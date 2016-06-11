@@ -246,7 +246,7 @@ let res = yield sso.setPasswordKey(anzuev@bk.ru);
 ```js
 // sso already defined and configured
 
-let res = yield sso.setPasswordKey(anzuev@bk.ru);
+let res = yield sso.setPassword(anzuev@bk.ru, '03df24bcce1e45b231876fe5b2c405b0a4940ebc');
 ```
 
 
