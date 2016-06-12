@@ -11,15 +11,23 @@ let config = require('./config'),
 
 
 /*
-	SSO class for StudCloud project;
+ SSO class for StudCloud project;
 
  */
 function SSO(){
 
 	var store;
+	var self = this;
+	this.setStore = function(newStore){
+		store = newStore;
+	}
+
+	this.getStore = function(){
+		return store;
+	};
 
 	this.init = function(configuration){
-		store = getStore(configuration.auth);
+		self.setStore(getStore(configuration.auth));
 		// check configuration
 		if(!store) throw new Error("Module 'studcloud.SSO' hasn't been configured");
 	};
@@ -47,7 +55,7 @@ SSO.prototype.setPasswordKey = require('./library/handlers/passwords').setPasswo
 SSO.prototype.getSessionsMiddleware = function(){
 
 	// check configuration
-	if(!store) throw new Error("Module 'studcloud.SSO' hasn't been configured");
+	if(!this.getStore()) throw new Error("Module 'studcloud.SSO' hasn't been configured");
 
 	return session({
 		secret: config.get('session:secret'),
@@ -55,15 +63,14 @@ SSO.prototype.getSessionsMiddleware = function(){
 		cookie: config.get('session:cookie'),
 		resave: false,
 		saveUninitialized: true,
-		store: store
+		store: this.getStore()
 	})
 };
 
 SSO.prototype.getContextMiddleware = function(){
 
 	// check configuration
-	if(!store) throw new Error("Module 'studcloud.SSO' hasn't been configured");
-
+	if(!this.getStore()) throw new Error("Module 'studcloud.SSO' hasn't been configured");
 	return loadContext;
 };
 
@@ -72,18 +79,18 @@ SSO.prototype.getContextMiddleware = function(){
 
 
 /*
-	get authLevel:
-		0 - unauthorized,
-		1 - authorized
-		2 - mail confirmed
-		3 - mobile confirmed
-		4 - document confirmed
-	get changePasswordToken:
-		string - allow to change password
-		undefined - not allow to change password
-	get user:
-		user - authLevel > 0
-		undefined - authLevel = 0
+ get authLevel:
+ 0 - unauthorized,
+ 1 - authorized
+ 2 - mail confirmed
+ 3 - mobile confirmed
+ 4 - document confirmed
+ get changePasswordToken:
+ string - allow to change password
+ undefined - not allow to change password
+ get user:
+ user - authLevel > 0
+ undefined - authLevel = 0
 
  */
 function loadContext(req, res, next){
@@ -111,14 +118,14 @@ function loadContext(req, res, next){
 
 
 /*
-	function to get MongoStore for sessions
-	Вход:
-		- settings
-			- db
-			- host
-			- port
-			- user(optional)
-			- password(optional)
+ function to get MongoStore for sessions
+ Вход:
+ - settings
+ - db
+ - host
+ - port
+ - user(optional)
+ - password(optional)
  */
 function getStore(settings){
 
