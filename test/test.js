@@ -2,6 +2,7 @@
 
 let Q = require('q');
 
+let config = require('../config');
 let configuration = {
 	auth:{
 		host: '127.0.0.1',

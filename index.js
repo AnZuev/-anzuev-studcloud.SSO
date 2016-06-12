@@ -1,11 +1,9 @@
 'use strict';
-let Util = require('util'),
-	session = require('express-session'),
+let session = require('express-session'),
 	Q = require('q');
 
-let Users = require('./library/models/User').User,
+let Users = require('@anzuev/studcloud.datamodels').User,
 	DbError = require("@anzuev/studcloud.errors").DbError;
-
 
 
 
@@ -26,10 +24,10 @@ function SSO(){
 		return store;
 	};
 
-	this.init = function(configuration){
-		self.setStore(getStore(configuration.auth));
+	this.init = function(){
+		self.setStore(getStore());
 		// check configuration
-		if(!store) throw new Error("Module 'studcloud.SSO' hasn't been configured");
+		if(!self.getStore()) throw new Error("Module 'studcloud.SSO' hasn't been configured");
 	};
 
 }
@@ -57,7 +55,6 @@ SSO.prototype.getSessionsMiddleware = function(settings){
 	// check configuration
 	if(!this.getStore()) throw new Error("Module 'studcloud.SSO' hasn't been configured");
 
-
 	return session({
 		secret: settings.secret,
 		key: settings.key,
@@ -69,8 +66,6 @@ SSO.prototype.getSessionsMiddleware = function(settings){
 };
 
 SSO.prototype.getContextMiddleware = function(){
-
-	// check configuration
 	if(!this.getStore()) throw new Error("Module 'studcloud.SSO' hasn't been configured");
 	return loadContext;
 };
@@ -121,34 +116,11 @@ function loadContext(req, res, next){
 /*
  function to get MongoStore for sessions
  Вход:
- - settings
- - db
- - host
- - port
- - user(optional)
- - password(optional)
+ -void
  */
-function getStore(settings){
-
+function getStore(){
 	let MongoStore = require('connect-mongo/es5')(session);
-
-
-	let url;
-	if(settings.user && settings.password){
-		url = Util.format("mongodb://%s:%s@%s:%d/%s",
-			settings.user,
-			settings.password,
-			settings.host,
-			settings.port,
-			settings.db)
-
-	}else{
-		url = Util.format("mongodb://%s:%d/%s",
-			settings.host,
-			settings.port,
-			settings.db);
-	}
-	return new MongoStore({url: url});
+	return new MongoStore({mongooseConnection: require('./connections').sso});
 }
 
 

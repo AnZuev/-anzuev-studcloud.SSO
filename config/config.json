@@ -1,5 +1,0 @@
-{
-  "sso":{
-     "mainDbUri": "mongodb://127.0.0.1/test_mainDB"
-  }
-}
