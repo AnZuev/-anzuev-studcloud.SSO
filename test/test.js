@@ -3,25 +3,19 @@
 let Q = require('q');
 
 let config = require('../config');
-let configuration = {
-	auth:{
-		host: '127.0.0.1',
-		port: 27017,
-		db: "test_sso"
-	}
-};
+
 
 
 
 let sso = require('../index');
-sso.init(configuration);
+sso.init();
 
 Q.async(function*(){
 	let authData = {
 		name: "Ant",
 		password: "sdkmskdmsf",
 		surname: "Zuev",
-		mail: "anzuev12@bk.ru"
+		mail: "anzuev@bk.ru"
 	};
 	try{
 		//let user = yield sso.signUp(authData);
