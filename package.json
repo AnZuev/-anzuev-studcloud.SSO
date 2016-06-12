@@ -19,7 +19,7 @@
     "connect-mongo": "^1.2.0",
     "express-session": "^1.13.0",
     "mongoose": "^4.4.19",
-    "nconf": "^0.8.4",
+    "nconf": "*",
     "q": "^1.4.1",
     "winston": "^2.2.0"
   }

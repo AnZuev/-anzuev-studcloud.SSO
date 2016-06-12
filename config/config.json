@@ -1,0 +1,7 @@
+{
+  "mongoose":{
+    "UsersUri": "mongodb://127.0.0.1/test_IStudentAPI",
+    "PSSUri": "mongodb://127.0.0.1/test_PSS",
+    "SSOUri": "mongodb://127.0.0.1/test_sso"
+  }
+}

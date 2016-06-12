@@ -2,7 +2,7 @@
 
 let mongoose = require('mongoose');
 
-var config = require('nconf');
+var config = require('./config');
 let usersCon,
 	ssoCon;
 
