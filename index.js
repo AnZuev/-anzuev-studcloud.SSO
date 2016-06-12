@@ -3,8 +3,7 @@ let Util = require('util'),
 	session = require('express-session'),
 	Q = require('q');
 
-let config = require('./config'),
-	Users = require('./library/models/User').User,
+let Users = require('./library/models/User').User,
 	DbError = require("@anzuev/studcloud.errors").DbError;
 
 
@@ -18,9 +17,10 @@ function SSO(){
 
 	var store;
 	var self = this;
+	
 	this.setStore = function(newStore){
 		store = newStore;
-	}
+	};
 
 	this.getStore = function(){
 		return store;
@@ -52,15 +52,16 @@ SSO.prototype.confirmDocument = require('./library/handlers/confirmation').docum
 SSO.prototype.setPassword = require('./library/handlers/passwords').setPassword;
 SSO.prototype.setPasswordKey = require('./library/handlers/passwords').setPasswordKey;
 
-SSO.prototype.getSessionsMiddleware = function(){
+SSO.prototype.getSessionsMiddleware = function(settings){
 
 	// check configuration
 	if(!this.getStore()) throw new Error("Module 'studcloud.SSO' hasn't been configured");
 
+
 	return session({
-		secret: config.get('session:secret'),
-		key: config.get('session:key'),
-		cookie: config.get('session:cookie'),
+		secret: settings.secret,
+		key: settings.key,
+		cookie: settings.cookie,
 		resave: false,
 		saveUninitialized: true,
 		store: this.getStore()

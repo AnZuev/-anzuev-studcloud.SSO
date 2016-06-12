@@ -1,7 +1,9 @@
 'use strict';
 
-let mongoose = require('../../libs/mongoose'),
-    Schema = mongoose.Schema,
+
+let config = require('../../../config'),
+	connection = require('mongoose').createConnection(config.get('sso:mainDbUri'), config.get('sso:mainDbOptions')),
+	Schema = require('mongoose').Schema,
 	Q = require('q'),
 	Util = require('util'),
 	DbError = require("@anzuev/studcloud.errors").DbError,
@@ -330,7 +332,7 @@ User.statics.confirmMobile = function(mail, phone, key){
 };
 
 
-exports.User = mongoose.model('User', User);
+exports.User = connection.model('User', User);
 
 
 

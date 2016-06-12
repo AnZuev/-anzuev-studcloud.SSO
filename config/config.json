@@ -1,15 +1,5 @@
 {
-  "mongoose":{
-    "ssoDb": "test_sso",
-    "mainDbUri": "mongodb://127.0.0.1/test_mainDB"
-  },
-  "session":{
-    "secret": "superSecretKey",
-    "key": "sid",
-    "cookie":{
-      "path": "/",
-      "maxAge":2592000000,
-      "httpOnly": true
-    }
+  "sso":{
+     "mainDbUri": "mongodb://127.0.0.1/test_mainDB"
   }
 }
