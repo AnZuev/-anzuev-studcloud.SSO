@@ -2,7 +2,7 @@
 let session = require('express-session'),
 	Q = require('q');
 
-let Users = require('@anzuev/studcloud.datamodels').User,
+let Users = require('./library/models/User'),
 	DbError = require("@anzuev/studcloud.errors").DbError;
 
 
