@@ -1,6 +1,6 @@
 'use strict';
 let Q = require('q'),
-	User = require('../models/User').User,
+	User = require('../models/User'),
 	ValidationError = require("@anzuev/studcloud.errors").ValidationError;
 
 

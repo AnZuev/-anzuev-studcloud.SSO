@@ -15,17 +15,18 @@ Q.async(function*(){
 		name: "Ant",
 		password: "sdkmskdmsf",
 		surname: "Zuev",
-		mail: "anzuev@bk.ru"
+		mail: "anzuev123@bk.ru"
 	};
 	try{
 		//let user = yield sso.signUp(authData);
-		//user = yield sso.signIn(authData);
+		let user = yield sso.signIn(authData);
 
-		let res = yield sso.setPasswordKey(authData.mail);
+		let res = yield sso.checkPermissionToGetFile(user, '575eb3749ded7fef0bdbf08c');
+		//let res = yield sso.setPasswordKey(authData.mail);
 		//let res = yield sso.setPassword(authData.mail, authData.password, '');
 		//let user = yield sso.confirmMail(authData.mail, '03df24bcce1e45b231876fe5b2c405b0a4940ebc');
 		console.log(res);
 	}catch(err){
-		console.error(err);
+		throw err;
 	}
 })().done();
