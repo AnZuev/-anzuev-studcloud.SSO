@@ -1,5 +1,5 @@
 'use strict';
-let User = require('../models/User').User,
+let User = require('../models/User'),
 	ValidationError = require("@anzuev/studcloud.errors").ValidationError,
 	Util = require('util');
 

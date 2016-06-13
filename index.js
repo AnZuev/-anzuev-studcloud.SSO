@@ -71,6 +71,9 @@ SSO.prototype.getContextMiddleware = function(){
 };
 
 
+SSO.prototype.checkPermissionToGetFile = require('./library/handlers/pssAccess').checkPermissionToViewFile;
+
+
 
 
 

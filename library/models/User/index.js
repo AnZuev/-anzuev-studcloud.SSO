@@ -194,6 +194,10 @@ User.statics.confirmMobile = function(mail, phone, key){
 };
 
 
+User.methods.isInGroup = function(group){
+	return (this.pubInform.group == group);
+};
+
 module.exports = connection.model("User", User);
 
 
