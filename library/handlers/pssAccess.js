@@ -3,7 +3,8 @@ let User = require('../models/User'),
 	File = require('../models/File'),
 	DbError = require("@anzuev/studcloud.errors").DbError,
 	Util = require('util'),
-	Mongoose = require('mongoose');
+	Mongoose = require('mongoose'),
+	Q = require("q");
 
 function checkPermission(user, fileId){
 	return Q.async(function*(){
