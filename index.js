@@ -42,6 +42,7 @@ SSO.prototype.checkDocumentActivationMiddleware = require('./library/handlers/ac
 
 SSO.prototype.signUp = require('./library/handlers/auth').signUp;
 SSO.prototype.signIn = require('./library/handlers/auth').signIn;
+SSO.prototype.logout = require("./library/handlers/auth").logout;
 
 SSO.prototype.confirmMail = require('./library/handlers/confirmation').mail;
 SSO.prototype.confirmMobile = require('./library/handlers/confirmation').mobile;

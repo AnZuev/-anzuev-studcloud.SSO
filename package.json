@@ -15,7 +15,8 @@
   "license": "ISC",
   "dependencies": {
     "@anzuev/studcloud.datamodels": "*",
-    "@anzuev/studcloud.errors": "^0.1.1",
+    "@anzuev/studcloud.errors": "^0.2.0",
+    "@anzuev/studcloud.fileinterface": "^1.1.2",
     "connect-mongo": "^1.2.0",
     "express-session": "^1.13.0",
     "mongoose": "^4.5.0",

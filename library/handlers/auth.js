@@ -21,3 +21,8 @@ exports.signIn = function(authData){
 	return User.signIn(authData);
 };
 
+
+exports.logout = function(req, res, next){
+	req.session.user = null;
+	next();
+};
