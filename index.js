@@ -97,27 +97,23 @@ SSO.prototype.checkPermissionToGetFile = require('./library/handlers/pssAccess')
  undefined - authLevel = 0
 
  */
-function loadContext(req, res, next){
-	req.context = {};
+function* loadContext(next){
+	let context = {};
+	let session = this.session;
 
-	if(!req.session.user){
-		req.context.authLevel = 0;
-		return next();
+	if(!session.user){
+		context.authLevel = 0;
+		yield next;
 	}
-	Q.async(function*(){
-		try{
-			req.user = yield Users.getById(req.session.user);
-			req.context.changePasswordKey = req.user.getChangePasswordContext();
-			req.context.authLevel = req.user.getAuthLevel();
-			return next();
-		}catch(err){
-			if(err instanceof DbError){
-				return next(err);
-			}else{
-				return next(new DbError(err, 500));
-			}
-		}
-	})().done();
+
+	let user = yield Users.getById(session.user);
+	context.changePasswordKey = user.getChangePasswordContext();
+	context.authLevel = user.getAuthLevel();
+
+	this.user = user;
+	this.context = context;
+
+	yield next;
 };
 
 
