@@ -6,7 +6,6 @@
   },
   "sso":{
     "session":{
-      "secret": "superSecretKey",
       "key": "StudCloud:session:",
       "cookie":{
         "path": "/",
