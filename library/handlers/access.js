@@ -1,33 +1,36 @@
+'use strict';
 
+let AuthError = require("@anzuev/studcloud.errors").AuthError;
 
-exports.checkAuth = function(req, res, next){
-	if(req.context.authLevel < 1){
-		return next(401);
+exports.checkAuth = function*(next){
+	if(this.context.authLevel < 1){
+		throw new AuthError(401, "Действие требует авторизации");
 	}else{
-		return next();
+		yield next;
 	}
 };
 
-exports.checkMailActivation = function(req, res, next){
-	if(req.context.authLevel < 2) {
-		return next(405);
+
+exports.checkMailActivation = function*(next){
+	if(this.context.authLevel < 2) {
+		throw new AuthError(405, "Действие требует подтверждения почтового адреса");
 	}else{
-		return next();
+		yield next;
 	}
 };
 
-exports.checkMobileActivation = function(req, res, next){
-	if(req.context.authLevel < 3) {
-		return next(405);
+exports.checkMobileActivation = function*(next){
+	if(this.context.authLevel < 3) {
+		throw new AuthError(405, "Действие требует подтверждения номера телефона");
 	}else{
-		return next();
+		yield next;
 	}
 };
 
-exports.checkDocumentActivation = function(req, res, next){
-	if(req.context.authLevel < 4) {
-		return next(405);
+exports.checkDocumentActivation = function*(next){
+	if(this.context.authLevel < 4) {
+		throw new AuthError(405, "Действие требует подтверждения зачетной книжки");
 	}else{
-		return next();
+		yield next;
 	}
 };
