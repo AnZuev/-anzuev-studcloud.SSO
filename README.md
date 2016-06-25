@@ -39,30 +39,23 @@ let SSO = require('sso');
 
 
 //...express app
-    let configuration = {
-	    auth:{
-            host: '127.0.0.1',
-            port: 27017,
-            db: "test_sso"
-	    }
-	};
-    //before use
-    SSO.init(configuration);
+//before use make sure that mongoose.UsersUri, mongoose.PSSUri and mongoose.SSOUri setted in config
+SSO.init();
 	
-	//basic work withSession, now it is express-session middleware
-    app.use(SSO.getSessionsMiddleware());
+//basic work withSession, now it is express-session middleware
+app.use(SSO.getSessionsMiddleware());
     
-    //load user context
-    app.use(SSO.getContextMiddleware());
+//load user context
+app.use(SSO.getContextMiddleware());
 
 //... express app
 
 
 //... routes file
-    router.get('/', SSO.checkAuthMiddleware, function(req, res, next) {
-        res.render('index', { title: 'Express' });
-    });
-    /*
+router.get('/', SSO.checkAuthMiddleware, function(req, res, next) {
+   res.render('index', { title: 'Express' });
+});
+/*
     available checks:
         - checkAuthMiddleware
         - checkMailActivationMiddleware
@@ -253,4 +246,4 @@ let res = yield sso.setPassword(anzuev@bk.ru, '03df24bcce1e45b231876fe5b2c405b0a
 ## History
 
 First version - 1.0.0  
-Current version - 1.1.0
+Current version - 1.4.0
