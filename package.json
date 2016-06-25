@@ -1,6 +1,6 @@
 {
   "name": "@anzuev/studcloud.sso",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "SSO for StudCloud project.",
   "main": "index.js",
   "scripts": {
@@ -17,11 +17,10 @@
     "@anzuev/studcloud.datamodels": "*",
     "@anzuev/studcloud.errors": "^0.2.0",
     "@anzuev/studcloud.fileinterface": "^1.1.2",
-    "connect-mongo": "^1.2.0",
-    "express-session": "^1.13.0",
+    "koa-generic-session": "^1.11.1",
+    "koa-generic-session-mongo": "^0.2.5",
     "mongoose": "^4.5.0",
     "nconf": "^0.8.4",
-    "q": "^1.4.1",
     "winston": "^2.2.0"
   }
 }

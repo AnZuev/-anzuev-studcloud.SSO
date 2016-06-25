@@ -3,5 +3,17 @@
     "UsersUri": "mongodb://127.0.0.1/test_IStudentAPI",
     "PSSUri": "mongodb://127.0.0.1/test_PSS",
     "SSOUri": "mongodb://127.0.0.1/test_sso"
+  },
+  "sso":{
+    "session":{
+      "secret": "superSecretKey",
+      "key": "StudCloud:session:",
+      "cookie":{
+        "path": "/",
+        "maxAge":2592000000,
+        "httpOnly": true
+      }
+    }
   }
+
 }
