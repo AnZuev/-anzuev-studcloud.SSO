@@ -1,7 +1,11 @@
 'use strict';
 let session = require('koa-generic-session'),
-	MongoStore = require('koa-generic-session-mongo');
-let Users = require('./library/models/User');
+	MongoStore = require('koa-generic-session-mongo'),
+	Q = require('q');
+
+let Users = require('./library/models/User'),
+	DbError = require("@anzuev/studcloud.errors").DbError;
+
 
 
 
@@ -96,17 +100,14 @@ SSO.prototype.checkPermissionToGetFile = require('./library/handlers/pssAccess')
 function* loadContext(next){
 	let context = {};
 	let session = this.session;
-
 	if(!session.user){
 		context.authLevel = 0;
-		yield next;
+	}else{
+		let user = yield Users.getById(session.user);
+		context.changePasswordKey = user.getChangePasswordContext();
+		context.authLevel = user.getAuthLevel();
+		this.user = user;
 	}
-
-	let user = yield Users.getById(session.user);
-	context.changePasswordKey = user.getChangePasswordContext();
-	context.authLevel = user.getAuthLevel();
-
-	this.user = user;
 	this.context = context;
 
 	yield next;

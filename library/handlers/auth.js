@@ -1,11 +1,21 @@
 'use strict';
-let User = require('../models/User'),
+let Q = require('q'),
+	User = require('../models/User'),
 	ValidationError = require("@anzuev/studcloud.errors").ValidationError;
 
 
-exports.signUp = function(authData){
-	validateInputData(authData);
-	return User.signUp(authData);
+exports.signUp = function*(next){
+	validateInputData(this.authData);
+
+	let context = {};
+	let user = yield User.signUp(this.authData);
+
+	context.changePasswordKey = user.getChangePasswordContext();
+	context.authLevel = user.getAuthLevel();
+	this.user = user;
+	this.context = context;
+	this.session.user = user._id;
+	yield next;
 };
 
 function validateInputData(authData){
@@ -16,8 +26,16 @@ function validateInputData(authData){
 
 }
 
-exports.signIn = function(authData){
-	return User.signIn(authData);
+exports.signIn = function*(next){
+	let user = yield User.signIn(this.authData);
+	let context = {};
+
+	context.changePasswordKey = user.getChangePasswordContext();
+	context.authLevel = user.getAuthLevel();
+	this.user = user;
+	this.context = context;
+	this.session.user = user._id;
+	yield next;
 };
 
 
