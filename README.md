@@ -38,31 +38,20 @@ npm install @anzuev/studcloud.sso --save
 let SSO = require('sso');
 
 
-//...express app
+//...koa.js app
 //before use make sure that mongoose.UsersUri, mongoose.PSSUri and mongoose.SSOUri setted in config
 SSO.init();
 	
-//basic work withSession, now it is express-session middleware
-app.use(SSO.getSessionsMiddleware());
+//basic work withSession, now it is koa-generic-session middleware
+app.use(SSO.getSessionsMiddleware(config.get('sso:session'))));
     
 //load user context
 app.use(SSO.getContextMiddleware());
 
-//... express app
+//... koa.js app
 
 
-//... routes file
-router.get('/', SSO.checkAuthMiddleware, function(req, res, next) {
-   res.render('index', { title: 'Express' });
-});
-/*
-    available checks:
-        - checkAuthMiddleware
-        - checkMailActivationMiddleware
-        - checkMobileActivationMiddleware
-        - checkDocumentActivationMiddleware
-    */
-//... routes file
+
 ```
 
 ## Public Methods
@@ -232,18 +221,17 @@ let res = yield sso.setPasswordKey(anzuev@bk.ru);
 	- DbError if something bad occured in database
 		- code = 500  
 		- message = ''
-		- err - error from database
+		- err - error from database  
 #### Example
 
 	
 ```js
 // sso already defined and configured
 
-let res = yield sso.setPassword(anzuev@bk.ru, '03df24bcce1e45b231876fe5b2c405b0a4940ebc');
+let res = yield sso.setPassword(anzuev@bk.ru, '03df24bcce1e45b231876fe5b2c405b0a4940ebc', newPassword);
 ```
 
 
 ## History
-
-First version - 1.0.0  
-Current version - 1.4.0
+1.4.0 - stable version for express app  
+2.0.0 - unstable version for koa.js
