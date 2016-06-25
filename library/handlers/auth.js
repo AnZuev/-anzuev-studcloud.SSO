@@ -1,6 +1,5 @@
 'use strict';
-let Q = require('q'),
-	User = require('../models/User'),
+let User = require('../models/User'),
 	ValidationError = require("@anzuev/studcloud.errors").ValidationError;
 
 
@@ -22,7 +21,7 @@ exports.signIn = function(authData){
 };
 
 
-exports.logout = function(req, res, next){
-	req.session.user = null;
-	next();
+exports.logout = function*(next){
+	this.session.user = null;
+	yield next;
 };

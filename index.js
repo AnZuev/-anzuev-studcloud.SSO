@@ -1,11 +1,7 @@
 'use strict';
 let session = require('koa-generic-session'),
-	MongoStore = require('koa-generic-session-mongo'),
-	Q = require('q');
-
-let Users = require('./library/models/User'),
-	DbError = require("@anzuev/studcloud.errors").DbError;
-
+	MongoStore = require('koa-generic-session-mongo');
+let Users = require('./library/models/User');
 
 
 
