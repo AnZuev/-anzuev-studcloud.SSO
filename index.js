@@ -1,9 +1,12 @@
 'use strict';
-let session = require('express-session'),
+let session = require('koa-generic-session'),
+	MongoStore = require('koa-generic-session-mongo'),
 	Q = require('q');
 
 let Users = require('./library/models/User'),
 	DbError = require("@anzuev/studcloud.errors").DbError;
+
+
 
 
 
@@ -55,10 +58,11 @@ SSO.prototype.getSessionsMiddleware = function(settings){
 
 	// check configuration
 	if(!this.getStore()) throw new Error("Module 'studcloud.SSO' hasn't been configured");
-
+	if(!settings) settings = require("./config").get('sso:session');
 	return session({
 		secret: settings.secret,
 		key: settings.key,
+		prefix: 'StudCloud:sessions:',
 		cookie: settings.cookie,
 		resave: false,
 		saveUninitialized: true,
@@ -123,8 +127,14 @@ function loadContext(req, res, next){
  -void
  */
 function getStore(){
-	let MongoStore = require('connect-mongo/es5')(session);
-	return new MongoStore({mongooseConnection: require('./connections').sso});
+	let mongooseConnection = require('./connections').sso;
+	return new MongoStore({
+		host: mongooseConnection.host,
+		port: mongooseConnection.port,
+		user: mongooseConnection.user,
+		password: mongooseConnection.password,
+		db: mongooseConnection.name
+});
 }
 
 
