@@ -8,7 +8,7 @@ exports.signUp = function*(next){
 	validateInputData(this.authData);
 
 	let context = {};
-	let user = yield User.signUp(this.authData);
+	let user = yield* User.signUp(this.authData);
 
 	context.changePasswordKey = user.getChangePasswordContext();
 	context.authLevel = user.getAuthLevel();
@@ -27,7 +27,7 @@ function validateInputData(authData){
 }
 
 exports.signIn = function*(next){
-	let user = yield User.signIn(this.authData);
+	let user = yield* User.signIn(this.authData);
 	let context = {};
 
 	context.changePasswordKey = user.getChangePasswordContext();

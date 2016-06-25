@@ -83,61 +83,58 @@ User.methods.saveUser = function(){
 };
 
 
-User.statics.signIn = function(authData){
+User.statics.signIn = function*(authData){
 	let User = this;
-	return Q.async(function*(){
-		let user;
-		try{
-			user =  yield User.findOne({"auth.mail": authData.mail});
-		}catch(err){
-			throw new DbError(err, 500);
-		}
-
-		if(user){
-			if(user.checkPassword(authData.password)) {
-				return user;
-			}else{
-				throw new AuthError('Incorrect password', 401);
-			}
+	let user;
+	try{
+		user =  yield User.findOne({"auth.mail": authData.mail});
+	}catch(err){
+		throw new DbError(err, 500);
+	}
+	if(user){
+		if(user.checkPassword(authData.password)) {
+			return user;
 		}else{
-			throw new AuthError('Incorrect mail', 401);
+			throw new AuthError('Incorrect password', 401);
 		}
-	})();
+	}else{
+		throw new AuthError('Incorrect mail', 401);
+	}
+
 };
 
-User.statics.signUp = function(authData){
+User.statics.signUp = function*(authData){
 	let User = this;
 
-	return Q.async(function*(){
-		let user;
-		try{
-			user = yield User.findOne({"auth.mail": authData.mail});
-		}catch(err){
-			throw new DbError(err, 500);
-		}
+	let user;
+	try{
+		user = yield User.findOne({"auth.mail": authData.mail});
+	}catch(err){
+		throw new DbError(err, 500);
+	}
 
-		if(user){
-			throw new AuthError(400, Util.format("mail %s already in use", authData.mail));
-		}
-		let key = Crypto.createHmac('sha1', Math.random() + "").update(authData.mail).digest("hex").toString();
-		let newUser = new User({
-			pubInform:{
-				name: authData.name,
-				surname: authData.surname
-			},
-			auth:{
-				mail: authData.mail,
-				password: authData.password
-			},
-			authActions:{
-				mailSubmit:{
-					key: key
-				}
+	if(user){
+		throw new AuthError(400, Util.format("mail %s already in use", authData.mail));
+	}
+	let key = Crypto.createHmac('sha1', Math.random() + "").update(authData.mail).digest("hex").toString();
+	let newUser = new User({
+		pubInform:{
+			name: authData.name,
+			surname: authData.surname
+		},
+		auth:{
+			mail: authData.mail,
+			password: authData.password
+		},
+		authActions:{
+			mailSubmit:{
+				key: key
 			}
-		});
-		return yield newUser.saveUser();
-	})();
+		}
+	});
+	return yield newUser.saveUser();
 };
+
 
 
 
