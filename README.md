@@ -1,5 +1,6 @@
 # SSO package for StudCloud project
 
+Основная документация - http://docs.idevteam.ru/display/PD/2.0.x+API+description
 StudCloud.SSO - пакет, который упрощает операции, связанные с авторизацией клиентов.  
 Всю работу с cookie и сессиями можно поручить пакету.  
 Для каждого запроса создается контекст:  
@@ -55,69 +56,6 @@ app.use(SSO.getContextMiddleware());
 ```
 
 ## Public Methods
-### signUp
-#### Description
-
-- In:  
-	- authData object  
-		- name  
-		- surname  
-		- mail  
-		- password    
-- Out:  
-	- user object from collection 'users'    
-	- ValidationError if data hasn't passed validation  
-		- code = 400  
-		- message = 'Mail is incorrect' or 'Password is too weak' or 'Incorrect personal info'  
-	- AuthError if user with such mail already exists in collection  
-		- code = 400  
-		- message = mail {some mail} already in use  
-
-#### Example
-	
-```js
-// sso already defined and configured
-
-let authData = {
-		name: "Anton",
-		password: "sdkmskdmsf",
-		surname: "Zuev",
-		mail: "anzuev@bk.ru"
-	};
-let user = yield sso.signUp(authData);
-```
-
-### signIn
-#### Description
-
-- In:  
-	- authData object  
-		- mail  
-		- password    
-- Out:  
-	- user object from collection 'users'    
-	- AuthError if no user found by mail 
-		- code = 401 
-		- message = 'Incorrect mail'
-	- AuthError if password isn't correct
-		- code = 401 
-		- message = 'Incorrect password'
-	- DbError if something bad occured in database
-		- code = 500  
-		- message = ''
-		- err - error from database
-
-#### Example
-	
-```js
-// sso already defined and configured
-
-let authData = {
-		name: "Anton",
-		password: "sdkmskdmsf"
-	};
-let user = yield sso.signIn(authData);
-```
 
 ### confirmMail
 #### Description
@@ -233,5 +171,5 @@ let res = yield sso.setPassword(anzuev@bk.ru, '03df24bcce1e45b231876fe5b2c405b0a
 
 
 ## History
-1.4.0 - stable version for express app  
+1.4.0 - unstable version for express app  
 2.0.0 - unstable version for koa.js
