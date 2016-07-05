@@ -24,20 +24,6 @@ User.virtual('auth.password')
 
 User.methods.checkPassword = require('./handlers/passwordHandlers').checkPassword;
 
-User.statics.setPasswordKey = require('./handlers/passwordHandlers').setPasswordKey;
-
-User.statics.hasPasswordTokenByMail = require('./handlers/passwordHandlers').hasPasswordTokenByMail;
-
-User.methods.getChangePasswordContext = require('./handlers/passwordHandlers').getChangePasswordContext;
-
-User.statics.setNewPasswordByMail = require('./handlers/passwordHandlers').setNewPasswordByMail;
-
-User.methods.setPasswordKey = function(){
-	this.changePassword.key = Crypto.createHmac('sha1', Math.random() + "")
-		.update(this.auth.mail)
-		.digest("hex").toString();
-};
-
 
 User.methods.getAuthLevel = function(){
 	if(this.authActions.documentSubmit.done){
@@ -82,6 +68,9 @@ User.methods.saveUser = function(){
 	})();
 };
 
+User.methods.isInGroup = function(group){
+	return (this.pubInform.group == group);
+};
 
 User.statics.signIn = function*(authData){
 	let User = this;
@@ -101,93 +90,6 @@ User.statics.signIn = function*(authData){
 		throw new AuthError('Incorrect mail', 401);
 	}
 
-};
-
-User.statics.signUp = function*(authData){
-	let User = this;
-
-	let user;
-	try{
-		user = yield User.findOne({"auth.mail": authData.mail});
-	}catch(err){
-		throw new DbError(err, 500);
-	}
-
-	if(user){
-		throw new AuthError(400, Util.format("mail %s already in use", authData.mail));
-	}
-	let key = Crypto.createHmac('sha1', Math.random() + "").update(authData.mail).digest("hex").toString();
-	let newUser = new User({
-		pubInform:{
-			name: authData.name,
-			surname: authData.surname
-		},
-		auth:{
-			mail: authData.mail,
-			password: authData.password
-		},
-		authActions:{
-			mailSubmit:{
-				key: key
-			}
-		}
-	});
-	return yield newUser.saveUser();
-};
-
-
-
-
-User.statics.confirmMail = function(mail, key){
-	let defer = Q.defer();
-
-
-	let promise = this.update(
-		{
-			"auth.mail": mail,
-			"authActions.mailSubmit.key": key
-		},
-		{
-			"authActions.mailSubmit.done": true,
-			"authActions.mailSubmit.key": null
-		}
-	);
-	promise.then(function(result){
-		if(result.nModified == 1) defer.resolve(true);
-		else{
-			defer.reject(new AuthError(403, 'Confirmation failed'));
-		}
-	}).catch(function(err){
-		defer.reject(new DbError(err, 500));
-	});
-
-	return defer.promise;
-};
-
-User.statics.confirmMobile = function(mail, phone, key){
-	let defer = Q.defer();
-
-
-	let promise = this.update(
-		{
-			"auth.mail": mail,
-			"authActions.mobileSubmit.key": key
-		},
-		{
-			"authActions.mobileSubmit.done": true,
-			"authActions.mobileSubmit.key": ''
-		}
-	);
-	promise.then(function(result){
-		if(result.nModified == 1) defer.resolve(true);
-		else{
-			defer.reject(new AuthError(403, 'Confirmation failed'));
-		}
-	}).catch(function(err){
-		defer.reject(new DbError(err, 500));
-	});
-
-	return defer.promise;
 };
 
 

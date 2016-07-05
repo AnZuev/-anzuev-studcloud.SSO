@@ -6,6 +6,8 @@ let session = require('koa-generic-session'),
 let Users = require('./library/models/User'),
 	DbError = require("@anzuev/studcloud.errors").DbError;
 
+const UAMS = require('@anzuev/studcloud.uams');
+
 
 
 
@@ -43,16 +45,9 @@ SSO.prototype.checkMobileActivationMiddleware = require('./library/handlers/acce
 SSO.prototype.checkDocumentActivationMiddleware = require('./library/handlers/access').checkDocumentActivation;
 
 
-SSO.prototype.signUp = require('./library/handlers/auth').signUp;
 SSO.prototype.signIn = require('./library/handlers/auth').signIn;
 SSO.prototype.logout = require("./library/handlers/auth").logout;
 
-SSO.prototype.confirmMail = require('./library/handlers/confirmation').mail;
-SSO.prototype.confirmMobile = require('./library/handlers/confirmation').mobile;
-SSO.prototype.confirmDocument = require('./library/handlers/confirmation').document;
-
-SSO.prototype.setPassword = require('./library/handlers/passwords').setPassword;
-SSO.prototype.setPasswordKey = require('./library/handlers/passwords').setPasswordKey;
 
 SSO.prototype.getSessionsMiddleware = function(settings){
 
@@ -69,7 +64,6 @@ SSO.prototype.getSessionsMiddleware = function(settings){
 		store: this.getStore()
 	})
 };
-
 SSO.prototype.getContextMiddleware = function(){
 	if(!this.getStore()) throw new Error("Module 'studcloud.SSO' hasn't been configured");
 	return loadContext;
@@ -79,8 +73,27 @@ SSO.prototype.getContextMiddleware = function(){
 SSO.prototype.checkPermissionToGetFile = require('./library/handlers/pssAccess').checkPermissionToViewFile;
 
 
-
-
+SSO.prototype.isPasswordChangeAllowed = function*(session){
+	if(!session.actions){
+		return false;
+	}
+	return (session.actions.passwordChange);
+};
+SSO.prototype.confirmPasswordChange = function*(next){
+	if(this.user.confirmPasswordToken(this.state.passwordKey)){
+		if(this.session.actions){
+			this.session.actions.passwordChange = true;
+		}else{
+			this.session.actions = {};
+			this.session.actions.passwordChange = true;
+		}
+		return true;
+	}
+	return false;
+};
+SSO.prototype.dropPasswordChangeAccess = function*(next){
+	this.session.actions.passwordChange = false;
+};
 
 /*
  get authLevel:
@@ -89,9 +102,6 @@ SSO.prototype.checkPermissionToGetFile = require('./library/handlers/pssAccess')
  2 - mail confirmed
  3 - mobile confirmed
  4 - document confirmed
- get changePasswordToken:
- string - allow to change password
- undefined - not allow to change password
  get user:
  user - authLevel > 0
  undefined - authLevel = 0
@@ -103,13 +113,11 @@ function* loadContext(next){
 	if(!session.user){
 		context.authLevel = 0;
 	}else{
-		let user = yield Users.getById(session.user);
-		context.changePasswordKey = user.getChangePasswordContext();
+		let user = yield UAMS.getUserById(session.user);
 		context.authLevel = user.getAuthLevel();
 		this.user = user;
 	}
 	this.context = context;
-
 	yield next;
 };
 

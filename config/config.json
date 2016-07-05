@@ -14,6 +14,16 @@
         "httpOnly": true
       }
     }
+  },
+  "logs":{
+    "UAMS":{
+      "path": "/Users/anton/GitHub/SSO/logs/UAMS.log",
+      "label": "UAMS"
+    },
+    "SSO":{
+      "path": "",
+      "label": "SSO"
+    }
   }
 
 }
