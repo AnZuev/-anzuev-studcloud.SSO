@@ -5,7 +5,7 @@ var nconf = require('nconf');
 var path = require('path');
 
 nconf.argv()
-    .env()
-    .file("ssoConfig", {file: path.join(__dirname, 'config.json')});
+    .env();
+    //.file("ssoConfig", {file: path.join(__dirname, 'config.json')});
 
 module.exports = nconf;
