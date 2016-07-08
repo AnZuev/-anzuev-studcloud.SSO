@@ -5,7 +5,7 @@ let log4js = require('log4js'),
 
 log4js.configure({
 	appenders: [
-		{ type: 'file', filename: config.get("SSO:path") || './logs/SSO.log', category: config.get("SSO:label") ||'SSO' },
+		{ type: 'file', filename: config.get("logs:SSO:path") || './logs/SSO.log', category: config.get("logs:SSO:label") ||'SSO' },
 		{ type: 'console' }
 	]
 });
