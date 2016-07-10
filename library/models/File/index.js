@@ -4,14 +4,20 @@ let Q = require('q'),
 	Util = require('util'),
 	DbError = require("@anzuev/studcloud.errors").DbError,
 	AuthError = require("@anzuev/studcloud.errors").AuthError,
-	FileInterface = require("@anzuev/studcloud.fileinterface"),
-	connection = require('../../../connections').pss;
+	FileInterface = require("@anzuev/studcloud.fileinterface");
 
-let fileInterface = new FileInterface();
+let connection;
 
-fileInterface.setConnection(connection);
+module.exports = function(){
+	connection = require('../../../connections').getConnections().pss;
 
-module.exports = fileInterface.get();
+	let fileInterface = new FileInterface();
+
+	fileInterface.setConnection(connection);
+
+	return fileInterface.get();
+};
+
 
 
 

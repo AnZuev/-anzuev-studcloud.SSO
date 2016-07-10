@@ -2,12 +2,23 @@
 
 let log4js = require('log4js'),
 	config = require('../../config/index');
+let isConfigured;
 
-log4js.configure({
-	appenders: [
-		{ type: 'file', filename: config.get("logs:SSO:path") || './logs/SSO.log', category: config.get("logs:SSO:label") ||'SSO' },
-		{ type: 'console' }
-	]
-});
+exports.configure = function(config){
+	log4js.configure({
+		appenders: [
+			{ type: 'file', filename: config.get("logs:SSO:path") || './logs/SSO.log', category: config.get("logs:SSO:label") ||'SSO' },
+			{ type: 'console' }
+		]
+	});
+	isConfigured = true;
 
-global.logger = log4js.getLogger('SSO');
+};
+
+exports.getLogger = function(){
+	if(!isConfigured){
+		throw new Error('logger has not been configured');
+	}else{
+		return log4js.getLogger('SSO');
+	}
+};
