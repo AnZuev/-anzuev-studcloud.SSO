@@ -1,6 +1,8 @@
 'use strict';
 
 let AuthError = require("@anzuev/studcloud.errors").AuthError;
+const logger  = require('../libs/logger').getLogger();
+const Util = require("util");
 
 /**
  * Миддлвер для проверки авторизован ли пользователь или нет
@@ -23,7 +25,10 @@ let AuthError = require("@anzuev/studcloud.errors").AuthError;
  */
 exports.checkAuth = function*(next){
 	if(this.context.authLevel < 1){
-		throw new AuthError(401, "Действие требует авторизации");
+		let err = new AuthError(401, "Действие требует авторизации");
+		logger.info(Util.format("Cookie = %s:: Попытка получить доступ к %s:: ошибка %s ",
+			this.request.header.cookie, this.url, err.get()));
+		throw err;
 	}else{
 		yield next;
 	}
@@ -51,7 +56,10 @@ exports.checkAuth = function*(next){
  */
 exports.checkMailActivation = function*(next){
 	if(this.context.authLevel < 2) {
-		throw new AuthError(405, "Действие требует подтверждения почтового адреса");
+		let err = new AuthError(405, "Действие требует подтверждения почтового адреса");
+		logger.info(Util.format("Cookie = %s:: Попытка получить доступ к %s:: ошибка %s ",
+			this.request.header.cookie, this.url, err.get()));
+		throw err;
 	}else{
 		yield next;
 	}
@@ -78,7 +86,10 @@ exports.checkMailActivation = function*(next){
  */
 exports.checkMobileActivation = function*(next){
 	if(this.context.authLevel < 3) {
-		throw new AuthError(405, "Действие требует подтверждения номера телефона");
+		let err = new AuthError(405, "Действие требует подтверждения номера телефона");
+		logger.info(Util.format("Cookie = %s:: Попытка получить доступ к %s:: ошибка %s ",
+			this.request.header.cookie, this.url, err.get()));
+		throw err;
 	}else{
 		yield next;
 	}
@@ -105,7 +116,10 @@ exports.checkMobileActivation = function*(next){
  */
 exports.checkDocumentActivation = function*(next){
 	if(this.context.authLevel < 4) {
-		throw new AuthError(405, "Действие требует подтверждения зачетной книжки");
+		let err = new AuthError(405, "Действие требует подтверждения зачетной книжки");
+		logger.info(Util.format("Cookie = %s:: Попытка получить доступ к %s:: ошибка %s ",
+			this.request.header.cookie, this.url, err.get()));
+		throw err;
 	}else{
 		yield next;
 	}

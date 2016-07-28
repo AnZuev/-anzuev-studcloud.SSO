@@ -87,7 +87,9 @@ SSO.configure = function(config){
 	require('./connections').configure(config);
 	require('./library/libs/logger').configure(config);
 	SSO.setStore(getStore());
-	if(!SSO.getStore()) throw new Error("Module 'studcloud.SSO' hasn't been configured");
+	if(!SSO.getStore()) {
+		throw new Error("Module 'studcloud.SSO' hasn't been configured");
+	}
 
 	SSO.checkAuthMiddleware = require('./library/handlers/access').checkAuth;
 	SSO.checkMailActivationMiddleware = require('./library/handlers/access').checkMailActivation;

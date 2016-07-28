@@ -1,7 +1,6 @@
 'use strict';
 
-let log4js = require('log4js'),
-	config = require('../../config/index');
+let log4js = require('log4js');
 let isConfigured;
 
 exports.configure = function(config){
@@ -12,7 +11,6 @@ exports.configure = function(config){
 		]
 	});
 	isConfigured = true;
-
 };
 
 exports.getLogger = function(){
