@@ -1,6 +1,6 @@
 {
   "name": "@anzuev/studcloud.sso",
-  "version": "2.0.8",
+  "version": "2.0.10",
   "description": "SSO for StudCloud project.",
   "main": "index.js",
   "scripts": {
@@ -15,9 +15,9 @@
   "license": "ISC",
   "dependencies": {
     "@anzuev/studcloud.datamodels": "*",
-    "@anzuev/studcloud.errors": "^0.2.0",
+    "@anzuev/studcloud.errors": "*",
     "@anzuev/studcloud.fileinterface": "^1.1.2",
-    "@anzuev/studcloud.uams": "^1.0.2",
+    "@anzuev/studcloud.uams": "1.0.x",
     "koa-generic-session": "^1.11.1",
     "koa-generic-session-mongo": "^0.2.5",
     "log4js": "^0.6.37",

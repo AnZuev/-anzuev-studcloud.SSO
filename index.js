@@ -86,6 +86,7 @@ SSO.configure = function(config){
 	SSO._config = config;
 	require('./connections').configure(config);
 	require('./library/libs/logger').configure(config);
+	require("@anzuev/studcloud.uams").configure(config);
 	SSO.setStore(getStore());
 	if(!SSO.getStore()) {
 		throw new Error("Module 'studcloud.SSO' hasn't been configured");
